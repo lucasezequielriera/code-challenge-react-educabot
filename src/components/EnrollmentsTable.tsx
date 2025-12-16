@@ -9,18 +9,21 @@ import {
   Paper,
   Button,
   Chip,
-  Typography
+  Typography,
+  Stack
 } from "@mui/material";
 import type { Enrollment } from "../types/enrollment";
 
 type EnrollmentsTableProps = {
     enrollments: Enrollment[];
     onConfirm: (id: string) => void;
+    onCancel: (id: string) => void;
 };
 
 export const EnrollmentsTable: React.FC<EnrollmentsTableProps> = ({
     enrollments,
     onConfirm,
+    onCancel,
 }) => {
     if (!enrollments || enrollments.length === 0) {
         return <Typography>No enrollments found.</Typography>;
@@ -36,7 +39,10 @@ export const EnrollmentsTable: React.FC<EnrollmentsTableProps> = ({
     };
 
     return (
-        <TableContainer component={Paper} sx={{ minHeight: 320 }}>
+        <TableContainer
+            component={Paper}
+            sx={{ minHeight: 320, width: '100%', overflowX: 'auto' }}
+        >
             <Table sx={{ minWidth: 650 }} aria-label="enrollments table">
                 <TableHead>
                     <TableRow>
@@ -69,13 +75,24 @@ export const EnrollmentsTable: React.FC<EnrollmentsTableProps> = ({
                             <TableCell>{new Date(enrollment.created_at).toLocaleDateString()}</TableCell>
                             <TableCell>
                                 {enrollment.status === "pending" && (
-                                    <Button
-                                        variant="contained"
-                                        size="small"
-                                        onClick={() => onConfirm(enrollment.id)}
-                                    >
-                                        Confirm
-                                    </Button>
+                                    <Stack direction="row" spacing={1}>
+                                        <Button
+                                            variant="contained"
+                                            size="small"
+                                            color="success"
+                                            onClick={() => onConfirm(enrollment.id)}
+                                        >
+                                            Confirm
+                                        </Button>
+                                        <Button
+                                            variant="outlined"
+                                            size="small"
+                                            color="error"
+                                            onClick={() => onCancel(enrollment.id)}
+                                        >
+                                            Cancel
+                                        </Button>
+                                    </Stack>
                                 )}
                             </TableCell>
                         </TableRow>

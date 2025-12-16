@@ -4,7 +4,7 @@ import type { Enrollment, EnrollmentStatus } from '../types/enrollment';
 
 /**
  * Custom hook que maneja toda la lógica de datos de inscripciones
- * Incluye: carga inicial, filtrado por estado y texto, agregar y confirmar inscripciones
+ * Incluye: carga inicial, filtrado por estado y texto, agregar, confirmar y cancelar inscripciones
  */
 export const useEnrollments = () => {
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
@@ -65,6 +65,19 @@ export const useEnrollments = () => {
     );
   };
 
+  /**
+   * Cancela una inscripción cambiando su estado a 'cancelled'
+   */
+  const cancelEnrollment = (id: string) => {
+    setEnrollments(
+      enrollments.map((enrollment) =>
+        enrollment.id === id
+          ? { ...enrollment, status: 'cancelled' as EnrollmentStatus }
+          : enrollment
+      )
+    );
+  };
+
   return {
     enrollments: filteredEnrollments,
     loading,
@@ -75,6 +88,7 @@ export const useEnrollments = () => {
     setTextFilter,
     addEnrollment,
     confirmEnrollment,
+    cancelEnrollment,
   };
 };
 

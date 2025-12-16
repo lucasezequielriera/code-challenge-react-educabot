@@ -114,7 +114,13 @@ export const Layout: React.FC<Props> = ({ children }) => {
             </Box>
             <Box
                 component="main"
-                sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
+                sx={{
+                    flexGrow: 1,
+                    p: { xs: 2, sm: 3 },
+                    width: { xs: '100%', sm: `calc(100% - ${drawerWidth}px)` },
+                    maxWidth: '100vw',
+                    overflowX: 'hidden',
+                }}
             >
                 <Toolbar />
                 {children}

@@ -17,6 +17,8 @@ type EnrollmentsSectionProps = {
   onTextFilterChange: (text: string) => void;
   /** Acción para confirmar una inscripción */
   onConfirmEnrollment: (id: string) => void;
+  /** Acción para cancelar una inscripción */
+  onCancelEnrollment: (id: string) => void;
 };
 
 /**
@@ -34,6 +36,7 @@ export const EnrollmentsSection: React.FC<EnrollmentsSectionProps> = ({
   onStatusFilterChange,
   onTextFilterChange,
   onConfirmEnrollment,
+  onCancelEnrollment,
 }) => {
   return (
     <Card>
@@ -60,7 +63,11 @@ export const EnrollmentsSection: React.FC<EnrollmentsSectionProps> = ({
           </Box>
 
           {/* Tabla de inscripciones */}
-          <EnrollmentsTable enrollments={enrollments} onConfirm={onConfirmEnrollment} />
+          <EnrollmentsTable
+            enrollments={enrollments}
+            onConfirm={onConfirmEnrollment}
+            onCancel={onCancelEnrollment}
+          />
         </Stack>
       </CardContent>
     </Card>

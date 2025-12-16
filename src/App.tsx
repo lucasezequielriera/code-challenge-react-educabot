@@ -2,11 +2,14 @@ import { EnrollmentsSection } from './components/EnrollmentsSection'
 import { NewEnrollmentForm } from './components/NewEnrollmentForm'
 import { Layout } from './components/Layout'
 import { useEnrollments } from './hooks/useEnrollments'
+import type { Enrollment } from './types/enrollment'
+import { useState } from 'react'
 import {
   Typography,
   Stack,
   CircularProgress,
   Alert,
+  Snackbar,
   Box,
 } from '@mui/material'
 
@@ -25,7 +28,15 @@ function App() {
     setTextFilter,
     addEnrollment,
     confirmEnrollment,
+    cancelEnrollment,
   } = useEnrollments()
+
+  const [showCreatedAlert, setShowCreatedAlert] = useState(false)
+
+  const handleCreateEnrollment = (enrollment: Enrollment) => {
+    addEnrollment(enrollment)
+    setShowCreatedAlert(true)
+  }
 
   // Estado de carga: muestra un spinner mientras se cargan los datos
   if (loading) {
@@ -64,14 +75,31 @@ function App() {
               onStatusFilterChange={setStatusFilter}
               onTextFilterChange={setTextFilter}
               onConfirmEnrollment={confirmEnrollment}
+              onCancelEnrollment={cancelEnrollment}
             />
           </Box>
           
           {/* Columna lateral: formulario para crear nuevas inscripciones */}
           <Box sx={{ flex: { md: '1 1 0' } }}>
-            <NewEnrollmentForm onCreate={addEnrollment} />
+            <NewEnrollmentForm onCreate={handleCreateEnrollment} />
           </Box>
         </Box>
+
+        <Snackbar
+          open={showCreatedAlert}
+          autoHideDuration={3000}
+          onClose={() => setShowCreatedAlert(false)}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        >
+          <Alert
+            onClose={() => setShowCreatedAlert(false)}
+            severity="success"
+            variant="filled"
+            sx={{ width: '100%' }}
+          >
+            New enrollment created successfully.
+          </Alert>
+        </Snackbar>
       </Stack>
     </Layout>
   )
