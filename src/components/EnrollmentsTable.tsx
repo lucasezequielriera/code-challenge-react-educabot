@@ -1,19 +1,20 @@
 import React from "react";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    Button,
-    Chip,
-    Typography
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Button,
+  Chip,
+  Typography
 } from "@mui/material";
+import type { Enrollment } from "../types/enrollment";
 
 type EnrollmentsTableProps = {
-    enrollments: any[];
+    enrollments: Enrollment[];
     onConfirm: (id: string) => void;
 };
 
@@ -35,7 +36,7 @@ export const EnrollmentsTable: React.FC<EnrollmentsTableProps> = ({
     };
 
     return (
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} sx={{ minHeight: 320 }}>
             <Table sx={{ minWidth: 650 }} aria-label="enrollments table">
                 <TableHead>
                     <TableRow>
@@ -48,7 +49,7 @@ export const EnrollmentsTable: React.FC<EnrollmentsTableProps> = ({
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {enrollments.map((enrollment: any) => (
+                    {enrollments.map((enrollment) => (
                         <TableRow
                             key={enrollment.id}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -61,7 +62,7 @@ export const EnrollmentsTable: React.FC<EnrollmentsTableProps> = ({
                             <TableCell>
                                 <Chip
                                     label={enrollment.status}
-                                    color={getStatusColor(enrollment.status) as any}
+                                    color={getStatusColor(enrollment.status) as 'success' | 'warning' | 'error' | 'default'}
                                     size="small"
                                 />
                             </TableCell>

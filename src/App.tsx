@@ -1,70 +1,51 @@
-import { useState, useEffect } from 'react'
-import { fetchEnrollments } from './api/enrollments'
-import { EnrollmentsTable } from './components/EnrollmentsTable'
-import { EnrollmentFilters } from './components/EnrollmentFilters'
+import { EnrollmentsSection } from './components/EnrollmentsSection'
 import { NewEnrollmentForm } from './components/NewEnrollmentForm'
 import { Layout } from './components/Layout'
+import { useEnrollments } from './hooks/useEnrollments'
 import {
   Typography,
   Stack,
   CircularProgress,
   Alert,
-  Card,
-  CardContent,
-  Grid,
   Box,
 } from '@mui/material'
 
+/**
+ * Componente principal de la aplicación
+ * Maneja la presentación de inscripciones usando el custom hook useEnrollments
+ */
 function App() {
-  const [enrollments, setEnrollments] = useState<any[]>([])
-  const [loading, setLoading] = useState<boolean>(false)
-  const [error, setError] = useState<any>(null)
-  const [filteredEnrollments, setFilteredEnrollments] = useState<any[]>([])
-  const [statusFilter, setStatusFilter] = useState<string>('all')
+  const {
+    enrollments,
+    loading,
+    error,
+    statusFilter,
+    textFilter,
+    setStatusFilter,
+    setTextFilter,
+    addEnrollment,
+    confirmEnrollment,
+  } = useEnrollments()
 
-  useEffect(() => {
-    let result = enrollments
-
-    if (statusFilter !== 'all') {
-      result = enrollments.filter((e: any) => e.status === statusFilter)
-    }
-
-    setFilteredEnrollments(result)
-  }, [statusFilter])
-
-  useEffect(() => {
-    setLoading(true)
-    fetchEnrollments()
-      .then((data: any) => setEnrollments(data))
-      .catch((err: any) => setError(err))
-      .finally(() => setLoading(false))
-  }, [])
-
-  const addEnrollment = (enrollment: any) => {
-    setEnrollments([...enrollments, enrollment])
+  // Estado de carga: muestra un spinner mientras se cargan los datos
+  if (loading) {
+    return (
+      <Layout>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+          <CircularProgress />
+        </Box>
+      </Layout>
+    )
   }
 
-  const confirmEnrollment = (id: string) => {
-    const index = enrollments.findIndex((e: any) => e.id === id)
-    if (index === -1) return
-
-    enrollments[index].status = 'confirmed'
-    setEnrollments(enrollments)
+  // Estado de error: muestra un mensaje de error si algo falla
+  if (error) {
+    return (
+      <Layout>
+        <Alert severity="error">{error.message}</Alert>
+      </Layout>
+    )
   }
-
-  if (loading) return (
-    <Layout>
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-        <CircularProgress />
-      </Box>
-    </Layout>
-  )
-
-  if (error) return (
-    <Layout>
-      <Alert severity="error">{error.message}</Alert>
-    </Layout>
-  )
 
   return (
     <Layout>
@@ -73,30 +54,24 @@ function App() {
           Enrollments Overview
         </Typography>
 
-        <Grid spacing={3}>
-          <Grid size={{ xs: 12, md: 8 }}>
-            <Card>
-              <CardContent>
-                <Stack spacing={2}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="h6">Enrollments List</Typography>
-                    <EnrollmentFilters
-                      currentFilter={statusFilter}
-                      onFilterChange={setStatusFilter}
-                    />
-                  </Box>
-                  <EnrollmentsTable
-                    enrollments={filteredEnrollments}
-                    onConfirm={confirmEnrollment}
-                  />
-                </Stack>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
+          {/* Columna principal: tabla de inscripciones */}
+          <Box sx={{ flex: { md: '2 1 0' } }}>
+            <EnrollmentsSection
+              enrollments={enrollments}
+              statusFilter={statusFilter}
+              textFilter={textFilter}
+              onStatusFilterChange={setStatusFilter}
+              onTextFilterChange={setTextFilter}
+              onConfirmEnrollment={confirmEnrollment}
+            />
+          </Box>
+          
+          {/* Columna lateral: formulario para crear nuevas inscripciones */}
+          <Box sx={{ flex: { md: '1 1 0' } }}>
             <NewEnrollmentForm onCreate={addEnrollment} />
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
       </Stack>
     </Layout>
   )
